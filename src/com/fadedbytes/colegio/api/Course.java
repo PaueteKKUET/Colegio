@@ -3,15 +3,16 @@ package com.fadedbytes.colegio.api;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Course {
 
-    private String name;
+    private final String name;
     private Professor professor;
     private List<Student> students;
     private float courseAverage;
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     public Course(@NotNull String name, @NotNull Professor professor) {
         this.name = name;
@@ -23,6 +24,16 @@ public class Course {
     public Course(@NotNull String name, @NotNull Professor professor, @NotNull List<Student> students) {
         this(name, professor);
         this.students.addAll(students);
+    }
+
+    public void setProfessor(Professor professor) {
+        Course[] newCourseList = (Course[]) Arrays.stream(this.professor.getCourses())
+                .filter(course -> !course.equals(this))
+                .toArray();
+
+        this.professor.setCourses(newCourseList);
+
+        this.professor = professor;
     }
 
     @NotNull
@@ -42,10 +53,14 @@ public class Course {
 
     public void setStudents(@NotNull List<Student> students) {
         this.students = students;
+        for (Student student : students) {
+            student.addCourse(this);
+        }
     }
 
     public void addStudent(Student student) {
         this.students.add(student);
+        student.addCourse(this);
     }
 
     @NotNull
@@ -55,6 +70,9 @@ public class Course {
 
     public void addTask(Task task) {
         this.tasks.add(task);
+        for (Student student : this.students) {
+            student.addTask(task.get());
+        }
     }
 
     public float getCourseAverage() {

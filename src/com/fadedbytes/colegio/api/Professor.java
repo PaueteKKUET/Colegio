@@ -1,6 +1,7 @@
 package com.fadedbytes.colegio.api;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.management.AttributeNotFoundException;
 import java.util.ArrayList;
@@ -12,10 +13,10 @@ public class Professor extends User implements Sobornable {
     private Course[] courses;
 
     public Professor() {
-
+        this("Profe Tá", null, 0.0f);
     }
 
-    public Professor(String name, String email, float salary) {
+    public Professor(@NotNull String name, @Nullable String email, float salary) {
         super(name, email);
         this.salary = salary;
         courses = new Course[0];
@@ -23,7 +24,15 @@ public class Professor extends User implements Sobornable {
 
     @Override
     public @NotNull String accessSchoolData() {
-        return super.accessSchoolData();
+        StringBuilder sb = new StringBuilder();
+
+        for (Course course : getCourses()) {
+            sb.append(course.getName()).append("\n");
+        }
+
+        return super.accessSchoolData() + "\n"
+                + "Salario: " + getSalary() + "€ al mes"
+                + "\nCursos: " + sb;
     }
 
     public float getSalary() {
@@ -41,6 +50,17 @@ public class Professor extends User implements Sobornable {
 
     public void setCourses(@NotNull Course[] courses) {
         this.courses = courses;
+    }
+
+    public void addCourse(@NotNull Course course) {
+
+        course.setProfessor(this);
+
+        Course[] newCourses = new Course[getCourses().length + 1];
+        System.arraycopy(getCourses(), 0, newCourses, 0, getCourses().length);
+        newCourses[newCourses.length - 1] = course;
+
+        this.setCourses(newCourses);
     }
 
     public void evaluateTask(int taskID, String courseName) {
@@ -62,14 +82,6 @@ public class Professor extends User implements Sobornable {
 
         taskToEvaluate.getTasks().forEach(task -> task.setGrade(task.isDone() ? (float) Math.random() * 10 : 0.0f));
 
-    }
-
-    public void addCourse(@NotNull Course course) {
-        Course[] newCourses = new Course[getCourses().length + 1];
-        System.arraycopy(getCourses(), 0, newCourses, 0, getCourses().length);
-        newCourses[newCourses.length - 1] = course;
-
-        this.setCourses(newCourses);
     }
 
     public void addTask(@NotNull Task task, @NotNull String courseName) {

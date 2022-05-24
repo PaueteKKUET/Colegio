@@ -8,10 +8,9 @@ import java.util.List;
 
 public class Student extends User {
 
-    private char classGroup;
-    private List<Course> courses;
+    private final char classGroup;
+    private final List<Course> courses;
 
-    private float average;
     private final ArrayList<Task.StudentTask> tasks;
 
     public Student() {
@@ -31,12 +30,12 @@ public class Student extends User {
     }
 
     public float getAverage() {
-        average = 0;
+        float average = 0;
         for (Task.StudentTask task : tasks) {
             average += task.getGrade();
         }
 
-        return average /= tasks.size();
+        return average / (float) (tasks.size() == 0 ? 1 : tasks.size()); // Prevenimos dividir entre 0
     }
 
     @Override
@@ -46,16 +45,37 @@ public class Student extends User {
             sb.append(course.toString()).append("\n");
         }
         return super.accessSchoolData() + "\n"
-                + "Cursos: \n" + sb.toString()
+                + "Grupo: " + getClassGroup() + "\n"
+                + "Cursos: \n" + sb + "\n"
                 + "Media: " + getAverage();
     }
 
     public void markTaskAsDone(Task.StudentTask task) {
-        this.tasks.remove(task);
+        markTaskAsDone(task.getTask());
+    }
+
+    public void markTaskAsDone(Task task) {
+        this.getTasks().forEach(t -> {
+            if (t.getTask().equals(task)) {
+                t.complete();
+            }
+        });
     }
 
     public ArrayList<Task.StudentTask> getTasks() {
         return new ArrayList<>(tasks);
+    }
+
+    public void addTask(Task.StudentTask task) {
+        tasks.add(task);
+    }
+
+    public void addCourse(Course course) {
+        this.courses.add(course);
+    }
+
+    public void removeCourse(Course course) {
+        this.courses.remove(course);
     }
 
     @Override
