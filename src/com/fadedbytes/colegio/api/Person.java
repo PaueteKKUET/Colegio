@@ -19,6 +19,7 @@ public abstract class Person {
     public Person(@NotNull String name, @Nullable String email) {
         if (email != null) {
             if (email.indexOf('@') == -1) throw new IllegalArgumentException("El email es incorrecto");
+            this.email = email;
         }
         this.name = name;
     }

@@ -2,18 +2,21 @@ package com.fadedbytes.colegio.api;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Task {
+public class Task implements Serializable {
+
+    private static final Collection<Task> TASKS = new ArrayList<>();
 
     private static int taskNumber = 0;
 
     private final int ID;
     private String name;
     private String description;
-    private Course course;
-    private Collection<StudentTask> tasks;
+    private final transient Course course;
+    private final transient Collection<StudentTask> tasks;
 
     public Task(String name, String description, Course course) {
         this.ID = taskNumber;
@@ -23,6 +26,12 @@ public class Task {
         this.name = name;
         this.description = description;
         this.course = course;
+
+        TASKS.add(this);
+    }
+
+    public static Collection<Task> getAllTasks() {
+        return TASKS;
     }
 
     public int getId() {
@@ -35,6 +44,14 @@ public class Task {
             grade += task.getGrade();
         }
         return grade / tasks.size();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @NotNull
@@ -52,12 +69,12 @@ public class Task {
     }
 
 
-    static class StudentTask {
+    public static class StudentTask {
         private final Task TASK;
         private boolean done;
         private float grade;
 
-        public StudentTask(@NotNull Task parentTask) {
+        private StudentTask(@NotNull Task parentTask) {
             this.TASK = parentTask;
         }
 
@@ -82,7 +99,5 @@ public class Task {
             return TASK;
         }
     }
-
-
 
 }

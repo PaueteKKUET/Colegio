@@ -54,6 +54,10 @@ public class Student extends User {
         markTaskAsDone(task.getTask());
     }
 
+    public List<Course> getCourses() {
+        return courses;
+    }
+
     public void markTaskAsDone(Task task) {
         this.getTasks().forEach(t -> {
             if (t.getTask().equals(task)) {
